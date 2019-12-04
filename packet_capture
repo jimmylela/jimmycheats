@@ -1,0 +1,54 @@
+#tcpdump
+
+-New favorites, 11/2/18
+
+	tcpdump -nnvvi 0.0:pnnn host x.x.x.x -s0 -C100 -w /var/tmp/`date +%Y%m%d_%H%M`_[device_name]_[file_name].pcap
+
+	tcpdump -nnvvi 0.0:pnnn host x.x.x.x -s0 -C100 -W10 -w /var/tmp/`date +%Y%m%d_%H%M`[device_name]_[file_name].pcap  (rotating capture)
+
+	tcpdump -nnqi 0.0 dst x.x.x.x  (better quick and dirty)
+
+
+
+
+-most bestest 04/11/2018 
+
+tcpdump -nnqi 0.0 host x.x.x.x | grep "> x.x.x.x"
+
+tcpdump -nnvvvi 0.0:pnnn host x.x.x.x -s0 -C200 -w /var/tmp/`date +%Y%m%d`_filename.pcap
+
+tcpdump -nnvvvi 0.0:pnnn host x.x.x.x -s0 -C00 -W10 -w /var/tmp/`date +%Y%m%d`_filename.pcap  (rotating capture)
+
+
+
+
+
+
+-quick and dirty see what IPs are hitting
+tcpdump -nnqs0 -i any host x.x.x.x
+tcpdump -nnqs0 -i any host x.x.x.x | grep "> x.x.x.x"  (see only one direction)
+
+
+-options
+	-s0 = packet size limit 0 (infinite)
+	-nn = no name resolution for hosts (first n) nor ports (second n)
+	-q = quiet output
+	-vvv = verbosisimoest
+	-i = interface (0.0 = all)
+		:nnn after interface = highest level of logging for F5 dissector and include 
+		:p after interface = include back end or front end load balanced connections using F5 dissector
+	-C = capture size limit in megabytes
+	-W number of files to create before rotating
+	-w = write output to file
+
+
+- see quickly what IPs are talking to a virtual server (traffic on a VIP)
+
+	tcpdump -nnqs0 -i any host x.x.x.x   (nnqs0 = don't resolve IPs or ports (nn), less info (q), and no size limit on packet (s0), i = interface)
+		
+	tmsh tcpdump -nnqs0 -i any host x.x.x.x | grep "> x.x.x.x"  -- only include the hits going to the virtual server, not both ways (easier to read)
+
+
+-DO IT IN WINDOWS!
+
+

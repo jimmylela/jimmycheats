@@ -1,0 +1,19 @@
+My anti-USB-C-confusion crusade begins!
+
+References
+https://www.goalzero.com/blog/what-tech-usb-c-and-power-delivery/
+https://www.howtogeek.com/211843/usb-type-c-explained-what-it-is-and-why-youll-want-it/
+
+
+Terms
+USBC = Physical connector type that is small and thin like MicroUSB but can be connected in either orientation
+       It supports USB2, USB3, and USB3.1 standards
+USB A = The most common one today, which is larger, has sharper corners, and can only be connected one way
+USB 2 = Older USB standard that supports up to 2.5 watts for charging and 480Mbps data throughput
+USB 3 = USB standard that supports up to ? watts for charging and 5Gbps of data throughput
+USB 3.1 = Newer USB standard that supports up to ? watts for charging and 10Gbps of data throughput
+USB PD = A USB standard for Power Delivery which supports up to 60 watts or 100 watts with an EMCA cable
+EMCA = 
+
+
+Laptops usually require up to 60 watts 

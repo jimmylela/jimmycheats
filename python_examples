@@ -1,0 +1,177 @@
+#############################################
+# Python code that I've written to use as a reference for stuff I've forgotten
+#############################################
+
+
+#############################################
+#dictionaries #dictionary
+#############################################
+
+#! /usr/bin/env python3
+
+# dictionary practice
+
+birthdays = {'Luke Skywalker': '5/24/19', 'Obi-Wan Kenobi': '3/11/57', 'Darth Vader': '4/1/41'}
+
+print(birthdays)
+
+# print everything in a dictionary on separate lines using items() method
+for i in birthdays.items():
+    print (i)
+
+('Luke Skywalker', '5/24/19')
+('Obi-Wan Kenobi', '3/11/57')
+('Darth Vader', '4/1/41')
+
+
+for name in 'Yoda', 'Darth Vader':
+    if name in birthdays:
+        print('{} is in the dictionary'.format(name))
+    else:
+        birthdays[name] = 'unknown'
+        print('{} has been added to the dictionary'.format(name))
+
+print()
+
+for name in sorted(birthdays):
+    print('{} {}'.format(name, birthdays[name]))
+
+
+print()
+
+del(birthdays['Darth Vader'])
+
+for name in sorted(birthdays):
+    print('{} {}'.format(name, birthdays[name]))
+
+
+
+#############################################
+#user input #input
+#############################################
+
+#! /usr/bin/env python3
+
+user_input = input('What? ')
+
+print ('Your face is a {}!'.format(user_input))
+
+
+
+#############################################
+#functions #define functions
+#############################################
+
+#! /usr/bin/env python3
+
+def multiply(num_1, num_2):
+    product = int(num_1) * int(num_2)
+    return product
+
+first_num = input('What is the first number to multiply? ')
+second_num = input('What is the second number to multiply? ')
+
+answer = multiply(first_num, second_num)
+
+print('Your answer is {}'.format(answer))
+
+
+
+
+#############################################
+#find in string #find non-regex
+#############################################
+
+#! /usr/bin/env python3
+
+my_string = input('What is your string? ')
+
+my_letter = input('What letter would you like to search for in your string? ')
+
+position = my_string.find(my_letter)
+
+if position == -1:
+	print ('{} was not found in {}'. format(my_letter, my_string))
+else:
+	print('{} was first found in position {} of {}'.format(my_letter, position, my_string))
+
+
+#############################################
+#find in string #find with regex
+#############################################
+
+import re
+
+string1= "test the stuff 1 and 2"
+found_string = (re.search("test.*stuff", string1)).group()
+
+>>>print found_string
+>>>test the stuff
+
+
+#############################################
+#files #file input #file read #file write
+#############################################
+
+#read from file, close automatically when done (with open)
+with open('mad_lib_1.txt', 'r') as file:
+	#print file.readlines()
+	for line in file.readlines():
+		print line
+
+#read from one file and write to another, close automatically
+with open('output.txt', 'w') as write_file, open('mad_lib_1.txt', 'r') as read_file:
+	for line in read_file.readlines():
+		write_file.write(line)
+
+
+
+
+#############################################
+#restful API calls
+#############################################
+
+import requests
+
+resp = requests.get('https://swapi.co/api/people/1/')  #make a GET Http request to a test api site with Star Wars info
+resp_dict = resp.json()   # unpack the json response into a dictionary
+for i in resp_dict.items():
+   print (i)  # print each key value pair in the dictionary on a separate line
+
+('name', 'Luke Skywalker')
+('height', '172')
+('mass', '77')
+('hair_color', 'blond')
+('skin_color', 'fair')
+('eye_color', 'blue')
+('birth_year', '19BBY')
+('gender', 'male')
+('homeworld', 'https://swapi.co/api/planets/1/')
+('films', ['https://swapi.co/api/films/2/', 'https://swapi.co/api/films/6/', 'https://swapi.co/api/films/3/', 'https://swapi.co/api/films/1/', 'https://swapi.co/api/films/7/'])
+('species', ['https://swapi.co/api/species/1/'])
+('vehicles', ['https://swapi.co/api/vehicles/14/', 'https://swapi.co/api/vehicles/30/'])
+('starships', ['https://swapi.co/api/starships/12/', 'https://swapi.co/api/starships/22/'])
+('created', '2014-12-09T13:50:51.644000Z')
+('edited', '2014-12-20T21:17:56.891000Z')
+('url', 'https://swapi.co/api/people/1/')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,672 @@
+AFM = Security, Network Firewall = Layer 3-4 firewall
+
+APM = Access Policy = Access control mechanisms, authentication, authorization, other
+
+ASM = Security, Application Security = Layer 7 firewall (Web Application Firewall)
+
+
+
+# f5 CLI f5 command line
+
+
+#look through all logs
+cat /var/log/* | grep -i memory
+cat /var/log/* | grep -i error
+
+#log files tarbal
+tar -czvf /var/tmp/`/bin/hostname`.logs.tgz /var/log/*  ('/bin/hostname' expands to hostname)
+
+#look for failover, standby logs
+tmsh show /sys ha-status   #show current failover states/causes
+egrep -i 'active|standby' /var/log/ltm
+egrep -i 'failover|failsafe' /var/log/ltm
+tmsh show /sys ha-status
+
+#sync changes
+(tmos)# run cm config-sync to-group WAF_DG  --sync changes to group (WAFs)
+(tmos)# run cm config-sync to-group corpf5ltm-sync-failove  --sync changes to group (LTMs)
+
+
+
+- show all virtual servers on all partitions
+from tmsh:
+cd /
+list ltm virtual recursive all  !! if you do it from root partition, this one shows all
+
+
+tmsh list ltm virtual /Web_Administrators/*/*
+
+- show all virtual servers names and VIPs on all partitions
+tmsh list ltm virtual recursive all destination
+
+
+
+
+- show stats for virtual server
+	show ltm virtual /[partition_or_iApp]/[virtual_server] 
+
+- reset stats for virtual server
+	reset-stats ltm virtual /[partition]/[virtual_server]
+
+
+
+-test monitor
+
+	curl -vIH "Host:[server_name]" -k https://[ip_address_of_pool_member][/URI_that_responds_if_not_root]
+
+	options v = verbose, I = HTTP headers ONLY, H = Host header, k = ignore certificate
+
+-----
+f5 tcpdump
+
+Limitations:  https://support.f5.com/csp/article/K6546
+
+Catpuring TMM data (both sides of flow, info on resetting :p in between catpurs):  https://support.f5.com/csp/article/K13637
+-most bestest 04/11/2018 
+
+tcpdump -nnqi 0.0 host x.x.x.x | grep "> x.x.x.x"
+
+tcpdump -nnvvvi 0.0:pnnn host x.x.x.x -s0 -C500 -w /var/tmp/2018MMDD_filename.pcap
+
+
+#my default tcpdumpdefault
+tcpdump -s0 -nnvvvi 0.0:nnnp host [x.x.x.x] -C 500 -w /var/tmp/filename_20171229.pcap
+	
+
+
+Mikes TCP dump instructions from OneNote
+
+TCPDUMP
+Needs to be done in the Linux kernel (not in TMOS)
+
+tcpdump -s0 -vni 0.0:nnnp host <VIP_Address> -C 15 -W 5 -w /var/tmp/dump.pcap
+
+	• "0.0" means all interfaces/vlans
+	• ":nnn" adds in the necessary noise for the F5 dissector within wireshark to be captured
+		 Typically used with F5 support cases (or you need to download the Wireshark dissectors - see Engler for help). 
+	• ":p" will allow it to capture both client and server side traffic to a specific VIP (only works on server VIPs)
+	• -C specifies the size of files to capture (15 = 15MB)
+	• -W specifies the amount of the files to capture (rolling buffer)
+
+#tcpdump
+
+-New favorites, 11/2/18
+
+	tcpdump -nnvvi 0.0:pnnn host x.x.x.x -s0 -C100 -w /var/tmp/`date +%Y%m%d_%H%M`_[device_name]_[file_name].pcap
+
+	tcpdump -nnvvi 0.0:pnnn host x.x.x.x -s0 -C100 -W10 -w /var/tmp/`date +%Y%m%d_%H%M`[device_name]_[file_name].pcap  (rotating capture)
+
+	tcpdump -nnqi 0.0 dst x.x.x.x  (better quick and dirty)
+
+
+
+
+-most bestest 04/11/2018 
+
+tcpdump -nnqi 0.0 host x.x.x.x | grep "> x.x.x.x"
+
+tcpdump -nnvvvi 0.0:pnnn host x.x.x.x -s0 -C200 -w /var/tmp/`date +%Y%m%d`_filename.pcap
+
+tcpdump -nnvvvi 0.0:pnnn host x.x.x.x -s0 -C00 -W10 -w /var/tmp/`date +%Y%m%d`_filename.pcap  (rotating capture)
+
+
+
+
+
+
+-quick and dirty see what IPs are hitting
+tcpdump -nnqs0 -i any host x.x.x.x
+tcpdump -nnqs0 -i any host x.x.x.x | grep "> x.x.x.x"  (see only one direction)
+
+
+
+-options
+	-s0 = packet size limit 0 (infinite)
+	-nn = no name resolution for hosts (first n) nor ports (second n)
+	-q = quiet output
+	-vvv = verbosisimoest
+	-i = interface (0.0 = all)
+		:nnn after interface = highest level of logging for F5 dissector and include 
+		:p after interface = include back end or front end load balanced connections using F5 dissector
+	-C = capture size limit in megabytes
+	-W number of files to create before rotating
+	-w = write output to file
+
+
+- see quickly what IPs are talking to a virtual server (traffic on a VIP)
+
+	tcpdump -nnqs0 -i any host x.x.x.x   (nnqs0 = don't resolve IPs or ports (nn), less info (q), and no size limit on packet (s0), i = interface)
+		
+	tmsh tcpdump -nnqs0 -i any host x.x.x.x | grep "> x.x.x.x"  -- only include the hits going to the virtual server, not both ways (easier to read)
+
+
+-DO IT IN WINDOWS!
+
+-from Nexus monitor
+tshark -i 1 -b filesize:100000 -b files:400 -p -f "ip proto 0x2f" -w C:\users\jlela\CHR_VoCollect_Nexux.pcap
+
+------
+
+Catpure :p resetting
+
+Note: This modifier continues to produce flow information for the life of the connection. Subsequent tcpdump captures reveal flow information from previous tcpdump captures using the :p modifier if the connection is still active. To clear flow information from previous use, run the tcpdump command without the :p modifier using a filter that matches no information in the flow and ensure some traffic has been received by the BIG-IP system for the flow.
+
+Example:  tcpdump -ni 0.0:nnn -s 0 port 1  (maybe?  wouldn't match any actual traffic, got this from https://devcentral.f5.com/questions/tcpdump-with-snat)
+
+
+--------
+
+
+APM troubleshooting
+
+- logs
+
+Increase logging level (Only do this temporarily):
+
+tmsh modify sys db log.accesscontrol.level value debug
+tmsh modify sys db log.sso.level value debug
+tmsh modify sys db log.webapplications.level value debug
+tmsh modify sys db tm.rstcause.pkt value enable
+tmsh modify sys db tm.rstcause.log value enable
+
+Turn Logging back to normal:
+
+tmsh modify sys db log.accesscontrol.level value notice
+tmsh modify sys db log.sso.level value notice
+tmsh modify sys db log.webapplications.level value notice
+tmsh modify sys db tm.rstcause.pkt value disable
+tmsh modify sys db tm.rstcause.log value disable
+
+
+cat /var/log/apm | grep [username]
+
+	or cat /var/log/apm | grep [ip_address]
+
+	get session id, 8 hex chars after /Common/VPN_v3.0:Commmon:   for example /Common/VPN_v3.0:Common:2b70072b:  =  2b70072b
+
+cat /var/log/apm | grep [session_id]
+
+cat /var/log/apm.1
+
+zcat /var/log/apm.2.gz
+
+!!best!! #apmlogs
+session=$(cat apm | grep [username] | tail -1 | awk -F: '{print $8}') | cat apm | grep $session | grep -v variable
+
+
+--APM waf VPN troubleshooting
+
+Sublime Text regex to see good info in detailed session output with verbose logging:  New session.*|Username.*|Following rule.*|ACL.*
+
+# see everything except session variables for a username
+cat /var/log/apm | grep -v ariable | grep -i [username]
+
+# see everything for a session
+cat /var/log/apm | grep [session_id]
+
+# see everything for a session except session variables 
+cat /var/log/apm | grep [session_id] grep -v ariable
+
+# see everything or almost everything for except session variables for a certain username
+cat /var/log/apm | grep -v ariable | grep -i [username] -a10 -b10
+
+
+------
+
+To view ACLS that reference an IP:
+tmsh list apm acl all | egrep "apm acl|X.X.X.X"
+	(it will list all acls, with the IP references just under the acl in which they are found)
+
+Check for references to networks (up to /24) that the IP is part of:
+
+tmsh list apm acl all | egrep "apm acl|X.X" | grep -v /32
+or
+tmsh list apm acl all | egrep "apm acl|X.X.X" | grep -v /32
+
+------
+
+-View AD groups used by VPN policies:
+
+tmsh list apm policy policy-item | CN=
+
+tmsh list apm policy policy-item | CN= -B10
+
+tmsh list apm policy policy-item | egrep 'policy-item|caption|CN='
+
+
+------
+
+Geo-blocking for email or VPN
+
+	Active Rules view has 24 pages and is cubmersome
+
+	Need to allow through Global Policy (Firewall Policy) and specific policy for virtual server
+
+	Global Firewall Policy
+
+		WAF1, Security, Network Firewall (AFM), Policies
+
+			Firewall Policy, scroll down to GeoBLocking, click All_Countries
+
+				scroll through Addresss to desired country, click x to remove, Update
+
+	Specific policy for virtual server
+
+		WAF1, Security, Network Firewall (AFM), Policies
+
+			HV_EX2013_PROD
+
+				Allowed
+
+					Source, select Country/Region, find it, Add, Update
+	
+			VPN?  Uses Global?
+
+	
+
+
+
+	WAF1, AFM (Security, Network Firewall), Policies, HV_EX2013_PROD
+
+		Allowed, Source, Add or delete Country/Region
+
+	Alternatively, WAF1, Local Traffic, Virtual Servers, HV_EX2013_PROD_edge, Security, Policies
+
+		Allowed, Source, Add or delete Country/Region
+
+
+------
+
+UCS backup
+
+	Make a UCS backup
+
+		System, Archives, Create, name it with the system name and date (e.g. 20170512_corpf5ltm1), Finished
+
+		Default file location is in /var/local/ucs
+
+		Use WinSCP or similar to move it off of the f5
+
+
+	bash# tmsh save sys ucs 20170512_corpf5ltm1   - will save to /var/local/ucs, shows up in GUI
+
+------
+
+VPN Antivirus check
+
+WAF, System, Software Management, Antivirus Check Updates, Device EPSEC Status
+  click Installed OESIS Version link to see supported AV clients
+  may not show under Package Status, possibly if installed along with OS update rather than specific EPSEC iso
+
+-Get new EPSEC package-
+
+downloads.hy-vee.com, Big-IP version (12.x, etc.), click dropdown for specific version, find latest epsec-xxx, compare to current, download iso if newer
+
+System, Software Management, Antivirus Check Updates, Upload Package, Upload and Install to Device Sync Group
+
+
+------
+
+
+
+
+
+cat /config/bigip.conf  --show configuration file, like show run
+
+-show apm access lists
+
+	tmsh list apm acl  --list all of them in their entirety
+
+	tmsh list apm acl description  --list just the names and descriptions
+
+	tmsh list apm acl [acl_name]
+
+-list all AFM policies and address lists, etc
+
+tmsh list security firewall
+
+tmsh list security firewall | grep [x.x.x.x] -A10 -B10
+
+
+
+
+-from bigip-tmsh-refrence-12-0-0.pdf in Documents:
+
+	acl
+	Manages an access control list (ACL).
+	Syntax
+	Configure the acl component within the apm module using the syntax shown in the following sections.
+	Create/Modify
+	create acl [name]
+	modify acl [name]
+	acl-order [integer]
+	app-service [[string] | none]
+	description [[string] | none]
+	entries {
+	{
+	action [allow | continue | discard | reject | unspec]
+	dst-end-port [[service] | none]
+	dst-start-port [[service] | none]
+	dst-subnet [[ip addr] | [[ip addr] [mask]]
+	host [[string] | none]
+	log [config | none | packet | summary | verbose]
+	paths [[string] | none]
+	protocol [integer]
+	scheme [any | http | https}
+	src-end-port [[service] | none]
+	src-start-port [[service] | none]
+	src-subnet [[ip addr] | [[ip addr] [mask]]
+	}
+	}
+	location-specific [true | false]
+	path-match-case [false | true]
+	type [dynamic | static]
+	Display
+	list acl
+	list acl [ [ [name] | [glob] | [regex] ] ... ]
+	all-properties
+	non-default-properties
+	partition
+	Delete
+	delete acl [name]
+
+
+------
+
+AD group cache clearing for after Windows 10 upgrades:
+
+	log in with AD creds
+
+		Click Access Policy, mouse over AAA Servers, then click Active Directory
+
+			Click ActiveDirectoryServers, scroll down to Group Cache Lifetime, click Clear Cache
+
+
+
+
+-TMSH apply access policy:  (all catches the ones at the root level, others have to be specified apparently)
+
+	tmsh modify apm profile access all generation-action increment && tmsh modify apm profile access /Common/ADFS_V3.0_PROD.app/ADFS_V3.0_PROD generation-action increment
+
+
+
+-show or clear connections on a pool member
+	
+	[show/delete] sys connection [client side or server side (cs or ss)]-[client or server]-addr x.x.x.x
+
+
+
+------
+
+#ASM bug  asm_config_serv issue
+
+Some more info to add to the discussion:
+
+In the kern.log.1 file, the “Out of memory” kill process was invoked. I see it killed process ID 21184, which alludes to “asm_config_serv”. 
+
+We did some googling and found this https://support.f5.com/csp/article/K46545161?ref=rss
+
+-Mike
+
+
+zcat /var/log/* | grep -i memory
+cat /var/log/* | grep -i memory
+
+cat /var/log/ltm | grep -i err
+
+
+If you want to know which processes are swapping you can launch this command :
+
+for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 " " $3}END{ print ""}' $file; done | sort -k 2 -n -r | less
+
+
+-script-
+
+#!/bin/bash
+
+# get asm_config_serv process memory usage
+echo >> /var/log/asm_config_serv_log.txt
+echo  >> /var/log/asm_config_serv_log.txt 
+date  >> /var/log/asm_config_serv_log.txt
+top -n1bc | grep "PID\|asm_config_serv" >> /var/log/asm_config_serv_log.txt
+echo  >> /var/log/asm_config_serv_log.txt
+echon
+free >> /var/log/asm_config_serv_log.txt
+echo
+
+
+------
+
+
+Add VPN Access for a Third Party
+
+
+Requirements
+
+	Administrator privileges on ft WAFs
+	Approved firewall change request form
+	Destination subnets third party needs access to (frequently only CyberArk)
+	Distinguished Name of AD group for third party (such as CN=Jaguar,OU=VPN Groups,OU=Corporate OU,DC=Hy-Vee,DC=net)
+
+Process
+
+ Access Policy, Access Profiles
+
+	Find VPN_v3.0, click Edit (6th column to the right) to open the Visual Policy Editor
+
+click Client Assignments and Checks macro rectangle
+
+scroll down, click AD Query macro (leftmost rectangle)
+
+  Branch Rules
+
+    Insert Before:  choose location, before :fallback to put it at the bottom
+
+    Add Branch Rule
+
+    Scroll to bottom to find new rule, enter name of third party
+
+    Click Expression: Empty  change
+
+      Add Expression
+
+        Agent Sel: AD Query
+
+        Condition:  User is a Member of:  
+
+        User is a member of box:  paste or enter distinguished name 
+
+        Add Expression
+
+        Finished
+
+    Save
+
+Scroll to bottom to find new AD Query entry, click + next to the name
+
+	Assignment, ACL Assign, Add Item
+
+  		Name it, usually ACL - [company] [(CA Only)] (such as ACL - Jaguar (CA Only) )
+
+  		Static ACLs, Add/Delete, select needed ACLs, always include Common/DenyAll  (usually just Common/DenyAll and Common/CyberArk, unless special access is needed)
+
+  	Save
+
+On new ACL assignement box, fallback, click +
+
+  Macros, Client Side Checks - All, Add Item
+
+On new Client Side Checks - All box, change Fail outcome from Success to Fail, Save
+
+Apply access policy
+
+Sync changes to group
+
+
+
+------
+
+#Geo IP lookup / geo IP update
+
+https://support.f5.com/csp/article/K11176
+
+BASH#
+geoip_lookup  # see date of database (at end 201xxxxx)
+
+geoip_lookup [x.x.x.x]  # look up location
+
+
+To update the Geo Database:
+	1. Download the update files (ZIP and MD5) (F5 website  https://downloads.f5.com/esd/product.jsp?sw=BIG-IP&pro=big-ip_v12.x )  
+	2. Copy both the zip file and the MD5 file to WAF1 /shared/tmp
+		a. pscp copy (scp utility included with Putty):
+		pscp <C:/<path>/<file>.zip <username>@<WAF_name_or_IP>:/var/tmp/<file>.zip
+	3. Change to bash (Linux)
+	4. Open CLI - navigate to the tmp directory
+	5. Verify the checksum of the MD5 file
+		a. md5sum -c <file>.zip.md5
+	6. Unzip the database file
+		a. unzip <file>.zip
+	7. For each of the RPM files - update the files to the system
+		a. geoip_update_data -f <file>.rpm
+	8. verify by running geoip_lookup <x.x.x.x>
+		a. check the version date
+
+
+------
+
+Pool member or node disabled vs forced offline vs removed
+
+
+	Pool member = IP and port, monitored by TCP usually, specific to one virtual server
+
+	Node = IP, monitored by ICMP, can be common to multiple virtual servers
+
+	Disabled = no new connections, active connections continue until timeout, persistent connections CAN reconnect
+
+	Forced Offline = no new connections, active connections continue until timeout, persistent connections CANNOT reconnect
+
+	To manually kill active connections:
+
+		delete sys connection [cs or ss (client side or server side)]-[client or server]-addr x.x.x.x
+
+	
+		https://support.f5.com/csp/article/K13310
+
+			Note: Connections to nodes are on the server side (ss-server) of the BIG-IP connection. Connections to virtual servers are on the client side (cs-server) of the BIG-IP connection.
+
+		To manually kill persistent connections:
+
+		delete ltm persistence persist-record node-addr [node IP]
+
+
+		
+
+------
+
+qkview
+
+	GUI:  System > Support, verify Qkview is selected, Start
+
+			Download file when prompted
+
+	TMSH:  qkview  (file size limited to default)
+
+			qkview -s0   (no file size limit)
+
+			qkview -h  (see help and options)
+
+
+				SCP to /shared/tmp, find file named [device_name].hy-vee.com.qkview
+
+
+------
+
+F5 user groups roles
+
+F5_Operators AD group - SysAdmins, can put some pool members up or down
+
+F5_Admins AD group - NetworkAdmins, full access
+
+hoping for a read only group
+
+------
+
+session dump to see actual values of session variables
+
+Access Policy, Event Logs, Access System Logs, run Session Variables report
+	
+	session.ad./Common/***_act_active_directory_query_ag.attr.memberOf    -- useful one to see group memberships
+	
+------
+
+-Disk space commands-
+
+df -h
+
+------
+
+-Performance commands-
+
+show sys performance system
+
+
+
+
+------
+
+
+
+
+
+------
+
+-F5 SCP from BASH,  F5SCP
+
+scp -p [user]@[F5_IP]:/[path_to_file/[file_name] [local_path]/[local_filename]
+
+
+------
+
+-cronjob -crontab to preserver log files and packet captures
+
+! note, had to escape the %s on the date variable and specifiy full path to tcpdump since cron environment variables are different than normal user root
+
+(first lines are what were already there, mine begin at # 2018 VoCollect issue)
+
+
+-TMSH find all certs, when they expire, who issued them, and where they're used
+
+-list all certs
+tmsh list sys file ssl-cert all
+
+-list all certs with name, expiration, and issuer
+tmsh list sys file ssl-cert all | grep -E 'file|string|issuer'
+
+-list all certs and client ssl profiles that use them  (all are on Common partition on LTM, no need to look in others)
+tmsh list ltm profile client-ssl all-properties | grep -E 'profile|crt' | grep profile -A1 
+
+
+-find all virtual servers that use a specific cert
+1. find or verify exact cert name:  
+	tmsh list sys file ssl-cert all | grep -E 'file|string|issuer' | grep -i [name or search term]
+2. find client ssl profiles that contain that cert name:
+	tmsh list ltm profile client-ssl all-properties | grep -E 'profile|crt' | grep profile -A1 | grep [cert_name] -B1
+3. find virtual servers that contain ssl profle name: 
+	tmsh list ltm virtual all-properties one-line | grep [profile_name]  | awk '{print $3}'
+	or tmsh list ltm virtual all-properties one-line | grep -E [profile_name_1|profile_name_2|profile_name_3]  | awk '{print $3}'
+
+
+-example of finding all virtual servers that use a specific cert
+
+
+
+------
+
+#iApp configuration danger
+
+If something was created with an iApp and then strict updates are disabled and modifications to are made to it, the iApp must never be re-deployed (which modifying it through the iApp would require), 
+but always in the future modified outside the iApp, or the changes will be lost.  If an iApp is needed after changes have been made to it outside of the iApp, either the iApp must be modified to mimic the changes, or a new iApp must be deployed and switched to.
+
+tldr, once you make changes outside the iApp, don't ever make changes again inside the iApp
+

@@ -1,0 +1,108 @@
+## Github Basics
+
+-Sources-
+
+https://guides.github.com/activities/hello-world/
+https://towardsdatascience.com/getting-started-with-git-and-github-6fcd0f2d4ac6
+https://github.community/t5/Support-Protips/The-difference-between-forking-and-cloning-a-repository/ba-p/1372
+https://blog.gitprime.com/the-definitive-guide-to-forks-and-branches-in-git/
+https://opensource.com/article/17/12/fork-clone-difference
+https://stackoverflow.com/questions/3611256/forking-vs-branching-in-github
+https://guides.github.com/activities/forking/
+
+-Introduction-
+
+-Concepts-
+
+Have you ever been working on a document or diagram or program and regretted making some changes?  You hit undo multiple times but before you get back to where you want the undo icon gets grayed out and your stuck with what you have now.  “Never again,” you tell yourself and you start to make liberal use of the “save as” option, naming your various files different things so that if you screw it up bad enough you have something to come back to.  Maybe you make one “master file” that when certain all was as it should be, you save your file as that filename and call it the permanent file.  Maybe when done you delete all the other files that were no longer needed.
+
+Or have you ever opened a file from a shared network drive or looked at the configuration of a device that a group maintains and said “Who the heck made these changes and why?!”  Maybe it was all wrong and you had to either find a backup of the previous config or reconfigure it as best as possible to get it back to a proper state.
+
+These scenarios involve the concept of version control, also known as revision control.  Programmers in particular frequently run into these problems, as they often work on projects that span multiple months or years and can have thousands of contributors. 
+
+Our Linux Lord and Savior Linus Torvalds encountered these problems when creating Linux, and created the software Git to help.
+
+Git (/ɡɪt/)[7] is a distributed version-control system for tracking changes in source code during software development.[8] It is designed for coordinating work among programmers, but it can be used to track changes in any set of files. Its goals include speed,[9] data integrity,[10] and support for distributed, non-linear workflows.[11]
+
+Git was created by Linus Torvalds in 2005 for development of the Linux kernel, with other kernel developers contributing to its initial development.[12] https://en.wikipedia.org/wiki/Git
+
+The concepts of Git are mostly the same as the idea of using “save as” to have backup copies of a file if you or anyone else screws it up.
+
+
+-Terminology-
+
+Git - Software to track changes in files over time, which is called version control or revision control
+Repository (Repo) - A group of files for which Git is tracking the changes
+Branch - Create a temporary copy of the main branch for editing (like editing a file before you've hit Save)
+Fork - Create a copy of a repository (repo) on the same computer (like doing a "Save As" and calling it another name)
+Pull request - Request that a shared repo incorporate the changes you've made in your personal repo
+
+
+-Working alone on Github-
+
+https://guides.github.com/activities/hello-world/
+Set up account or log in to https://github.com
+Create a repository
+Initialize the repository with a README
+Create a branch (or just edit in master branch)
+Make some changes to the README file
+Commit the changes
+Create a pull request (PR)
+Merge the PR into the master branch
+
+
+-Working with others on Github-
+
+Fork an existing repo (create a copy of it in your private Github workspace) and create a branch (make a temporary copy for editing). The GUI does both of these automatically for you when you click Edit.
+Initializing the repo is not needed since it is a fork of an existing repo that is already initialized
+Make some changes to the file
+Stage and commit the changes (The GUI does both of these when you clikc "Propose file change")
+Create a pull request (PR)
+Wait for someone with the necessary privileges to approve your PR and merge the changes into the master branch
+
+
+-Working alone on your computer-
+
+-More Terminology-
+
+Initialize - Begin tracking changes in files in a directory with Git
+Stage - Prepare file changes in a branch for a commit
+Commit - Save changes
+
+Choose or create a directory for a project
+Initialize the directory
+Create or copy files into the directory, including a README
+Stage the changes
+Perform the initial commit
+Create a branch
+Make some changes
+Stage the changes
+Commit the changes
+Delete the branch
+
+
+-Working with others on your computer (the Hy-Vee way)-
+
+-More Terminology-
+
+Clone - Create a copy a repository on a different computer (like copying a folder from a different computer or network drive)
+Remote - A repo on another computer
+Push - Update a remote repo that you own
+
+https://confluence.hy-vee.com/display/NSKB/GitHub+-+Repository+basics
+Install Git and connect account with Github
+Create or choose a local folder for the project
+Fork an existing repo to your Github workspace (from web GUI)
+In your new fork of the repo, click Clone or download, verify Clone with SSH is the method, not HTTPS, and copy the link
+Change to the new directory that was created
+Clone the newly forked repo from your Github workspace to your local computer (git clone <link>) (this will initialize it automatically)
+In the master repo on GitHub, not your fork of it, click Clone or download, verify Clone with SSH is the method, not HTTPS, and copy the link
+Add a link to the master copy in your new local repo to facilitate future Pull Requests (PRs) (git remote add upstream <link>)
+Create a branch
+Make some changes
+Stage the changes
+Commit the changes
+Push the changes to your fork of the repo on Github
+Create a PR to request your fork containing your edits be incorporated into the master branch
+Wait for it to be approved and merged
+
