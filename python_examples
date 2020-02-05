@@ -2,6 +2,22 @@
 # Python code that I've written to use as a reference for stuff I've forgotten
 #############################################
 
+#############################################
+#print with variables (best way, f-strings)
+#############################################
+
+#! /usr/bin/env python3
+
+# Make a list of commands and insert a string in each from another list of strings
+
+parent_monitor = 'https'
+host_list = ['host_a', 'host_b', 'host_c']
+receive_string = 'test_receive_string'
+
+for host_name in host_list:
+    print (f'create ltm monitor {parent_monitor} {host_name}-Health defaults-from https send GET /check.htm HTTP/1.1\\r\\nHost: [host_name]\\r\\nConnection: Close\\r\\n\\r\\n recv {receive_string}')
+
+
 
 #############################################
 #dictionaries #dictionary
