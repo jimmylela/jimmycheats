@@ -1,6 +1,8 @@
-#############################################
-# Python code that I've written to use as a reference for stuff I've forgotten
-#############################################
+##########################################################################################
+##########################################################################################
+###    Python code that I've written to use as a reference for stuff I've forgotten    ###
+##########################################################################################
+##########################################################################################
 
 #############################################
 #print with variables (best way, f-strings)
@@ -173,10 +175,22 @@ for i in resp_dict.items():
 
 
 
+#############################################
+#web scraping, simple with standard libraries
+#############################################
+
+from urllib.request import urlopen
+
+url = "http://olympus.realpython.org/profiles/aphrodite"
+html_page = urlopen(url)
+html_text = html_page.read().decode("utf-8")
+print(html_text)
 
 
 
-
+#############################################
+#web scraping, advanced with Beautiful Soup
+#############################################
 
 
 
