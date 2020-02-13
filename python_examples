@@ -115,7 +115,7 @@ else:
 
 
 #############################################
-#find in string #find with regex
+#regex
 #############################################
 
 import re
@@ -125,6 +125,21 @@ found_string = (re.search("test.*stuff", string1)).group()
 
 >>>print found_string
 >>>test the stuff
+
+
+#capture groups (AKA subgroups), capture part of regex match instead of entire thing
+
+import re
+
+string2 = 'test more stuff A and B'
+found_string = (re.search("more.*B", string2)).group()
+captured_string = (re.search("more.*(stuff.*A).*B", string2)).group(1)
+
+print (found_string)
+>>> more stuff A and B
+print (captured_string)
+>>> stuff A
+
 
 
 #############################################
