@@ -81,3 +81,11 @@ $
 
 #### append after line
 o #start new line and enter insert mode
+
+#### search and replace
+
+:% s/[search_string]/[replacement_string]/g  
+  #% = entrire file, g = global (all occurences on a single line, not just the first)
+  
+5,10 s/[search_string]/[replacement_string]/g
+  #5,10 = lines 5 to 10, g = global (all occurences on a single line, not just the first)
