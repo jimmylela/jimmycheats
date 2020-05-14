@@ -241,6 +241,10 @@ print (f.'stdout: {stdout_output}')
 
 
 #############################################
-#
+#datetime
 #############################################
+>>> import datetime
+>>> print datetime.datetime.now()
+2020-05-14 11:56:29.938464
+>>>
 
