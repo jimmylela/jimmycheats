@@ -230,8 +230,8 @@ ssh_connection.connect(hostname=ssh_hostname,username=ssh_username,password=ssh_
 stdin,stdout,stderr=ssh_connection.exec_command('ls')
 
 # parse Python objects, save reslts to printable variables
-stdout_output = stdout.readlines()
-stderr_output = stderr.readlines()
+stdout_output = stdout.read().decode('ascii')
+stderr_output = stderr.read().decode('ascii')
 
 # print output
 print (f.'stderr: {stderr_output}')
