@@ -5,24 +5,20 @@
 ##########################################################################################
 
 #############################################
-#print with variables (best way, f-strings)
+#print with variables
 #############################################
 
-#! /usr/bin/env python3
+# best method, f-strings, python3 only
+my_name = 'Jimmy'
+print (f.'Hello, {my_name}')
 
-# Make a list of commands and insert a string in each from another list of strings
-
-parent_monitor = 'https'
-host_list = ['host_a', 'host_b', 'host_c']
-receive_string = 'test_receive_string'
-
-for host_name in host_list:
-    print (f'create ltm monitor {parent_monitor} {host_name}-Health defaults-from https send GET /check.htm HTTP/1.1\\r\\nHost: [host_name]\\r\\nConnection: Close\\r\\n\\r\\n recv {receive_string}')
-
+# second best method, format strings, all versions
+my_name = 'Jimmy'
+print ('Hello, {}'.format(my_name))
 
 
 #############################################
-#dictionaries #dictionary
+#dictionaries
 #############################################
 
 #! /usr/bin/env python3
@@ -210,13 +206,41 @@ print(html_text)
 
 
 
+#############################################
+#ssh, paramiko
+#############################################
+#! /usr/bin/env python3
+
+# A generic Python SSH script to connect, run commands, and save output
+
+# import paramako library for SSH connections
+import paramiko
+
+#set host to connect to, username, and password
+ssh_hostname = '<name_or_IP'
+ssh_username = '<user>'
+ssh_password = '<password>'
+
+# create ssh_connection variable for Paramiko connection, set it to automatically add new server SSH keys, set target and credentials from variables
+ssh_connection =paramiko.SSHClient()
+ssh_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_connection.connect(hostname=ssh_hostname,username=ssh_username,password=ssh_password)
+
+# connect to device, run command(s), save output to variables
+stdin,stdout,stderr=ssh_connection.exec_command('ls')
+
+# parse Python objects, save reslts to printable variables
+stdout_output = stdout.readlines()
+stderr_output = stderr.readlines()
+
+# print output
+print (f.'stderr: {stderr_output}')
+print (f.'stdout: {stdout_output}')
 
 
 
 
-
-
-
-
-
+#############################################
+#
+#############################################
 
