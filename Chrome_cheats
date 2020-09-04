@@ -1,10 +1,13 @@
 
 # Switch to new tab when opened
-Tab Activate, https://chrome.google.com/webstore/detail/tab-activate/jlmadbnpnnolpaljadgakjilggigioaj
+Tab Activate extension, https://chrome.google.com/webstore/detail/tab-activate/jlmadbnpnnolpaljadgakjilggigioaj
 
 # Change color of visited links
-Install Stylus extension, https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne?hl=en
+Stylus extension, https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne?hl=en
 Write new style
   a:visited { color: MediumSeaGreen }
 Other colors at https://www.w3schools.com/css/css_colors.asp
 
+# Switch to most recently used tab
+CLUT extenstion, https://chrome.google.com/webstore/detail/clut-cycle-last-used-tabs/cobieddmkhhnbeldhncnfcgcaccmehgn/related?hl=en
+Alt + W to go to most recently used tab
