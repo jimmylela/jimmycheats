@@ -1,0 +1,10 @@
+
+# Switch to new tab when opened
+Tab Activate, https://chrome.google.com/webstore/detail/tab-activate/jlmadbnpnnolpaljadgakjilggigioaj
+
+# Change color of visited links
+Install Stylus extension, https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne?hl=en
+Write new style
+  a:visited { color: MediumSeaGreen }
+Other colors at https://www.w3schools.com/css/css_colors.asp
+
