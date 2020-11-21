@@ -1,0 +1,25 @@
+# New Centos 8 Server Initial Setup
+
+Geared mainly towards hosted VM, which will have networking, storage, and maybe some other functions set up automatically upon creation
+
+## Create swap file (if needed, Azure VMs are created with no swap file, which causes problems including semanage failures)
+sudo fallocate -l 1g /mnt/resource/swap1g
+sudo chmod 600 /mnt/resource/swap1g
+sudo mkswap /mnt/resource/swap1g
+sudo swapon /mnt/resource/swap1g
+
+## Install semanage to manage Selinux
+sudo yum provides selenix  
+sudo yum install policycoreutils-python-utils -y
+
+## Management
+Assuming networking is set up and 22 or another port is already allowed inbound
+
+sudo cp /etc/ssh/sshd_config /etc/ssh.sshd_config.bak.YYYYMMDD
+
+sudo vi /etc/ssh/sshd_config 
+  add line under '#Port 22' saying "Port 1914"
+
+sudo semanage port -a -t ssh_port_t -p tcp 1914
+
+systemctl restart sshd
