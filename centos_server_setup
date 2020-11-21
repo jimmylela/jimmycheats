@@ -23,3 +23,5 @@ sudo vi /etc/ssh/sshd_config
 sudo semanage port -a -t ssh_port_t -p tcp 1914
 
 systemctl restart sshd
+
+Edit vm firewall rules with cloud provider
