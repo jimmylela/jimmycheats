@@ -29,14 +29,17 @@ Git was created by Linus Torvalds in 2005 for development of the Linux kernel, w
 The concepts of Git are mostly the same as the idea of using “save as” to have backup copies of a file if you or anyone else screws it up.
 
 
--Terminology-
+-Git Terminology-
 
-Git - Software to track changes in files over time, which is called version control or revision control
+Git - Software to track changes in files over time, a process known as version control or revision control
 Repo (short for Repository) - A group of files for which Git is tracking the changes
-Branch - Create a temporary copy of the main branch for editing (like editing a file before you've hit Save)
-Fork - Create a copy of a repo (repository) on the same computer (like doing a "Save As" and calling it another name)
-PR (short for Pull Request) - Request that a shared repo incorporate the changes you've made in your personal repo
-
+Branch - A copy, usually meant to be temporary, of a repo (repository) that is used for editing files (like editing a file before hitting Save)
+Fork - A repo (repository) that is a copy of a repo on the same computer (like doing a "Save As" after editing a file and giving it another name)
+Clone - A repo (repository) that is a copy of a repo on some other computer (like copying a file from one machine to another)
+PR (short for Pull Request) - Request that a shared or public repo (repository) incorporate the changes you've made in your personal repo
+Initialize - Begin tracking changes in files in a directory with Git
+Stage - Prepare file changes in a branch for a commit
+Commit - Save changes
 
 -Working alone on Github-
 
@@ -62,12 +65,6 @@ Wait for someone with the necessary privileges to approve your PR and merge the 
 
 
 -Working alone on your computer-
-
--More Terminology-
-
-Initialize - Begin tracking changes in files in a directory with Git
-Stage - Prepare file changes in a branch for a commit
-Commit - Save changes
 
 Choose or create a directory for a project
 Initialize the directory
