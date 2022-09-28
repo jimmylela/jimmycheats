@@ -1,0 +1,11 @@
+---
+hostname: dev.jimmy_poc_delta.com
+ticket_number: 333333
+app_pool_user: itagroup\dappjimmypocdelta
+app_pool_pass: dappjimmypocdelta11AMA$
+webservers_1:
+  server_name: wiwa10dev01
+  server_ip: 10.100.110.226
+webservers_2:
+  server_name: wiwa10dev02
+  server_ip: 10.100.110.227
