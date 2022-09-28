@@ -1,0 +1,70 @@
+---
+################################################################################
+## Create a website on IIS, including:
+## D:\Publish\[site_name] directory
+## IIS app pool
+## IIS site with HTTP bindings
+## HTTPS bindings
+##
+## Run with -i /etc/ansible/poc_hosts, vault file, and -e 'site_name'<site_name'
+##
+## Create: 9/24/2020, Jimmy Lela
+## Updated: 9/27/2022, Jimmy Lela
+##
+##
+################################################################################
+
+- name: configure dev websites on IIS
+  hosts: dev_web_servers_iis_10
+  vars_files:
+    - "vars/{{ site_name }}.yml"
+    - "vars/.secret_vars/{{ site_name }}_secret_vars.yml"
+
+  tasks:
+
+###############################################################################
+
+## Configure site directory
+
+  - name: create site directories
+    win_file:
+      path: 'D:\publish\{{ hostname }}'
+      state: directory
+ 
+###############################################################################
+
+## Configure IIS app pool
+
+  - name: create IIS app pools
+    win_iis_webapppool:
+      name: "{{ hostname }}"
+      state: started
+      attributes:
+        managedPipelineMode: Integrated
+        processModel.identityType: SpecificUser
+        processModel.userName: "{{ app_pool_user }}"
+        processModel.password: "{{ app_pool_pass }}"
+        processModel.loadUserProfile: true
+        recycling.periodicRestart.privateMemory: 2097152
+
+###############################################################################
+
+## Configure IIS site
+
+  - name: create IIS sites
+    win_iis_website:
+      name: "{{ hostname }}"
+      state: started
+      port: 80
+      #ssl: true
+      hostname: "{{ hostname }}"
+      application_pool: "{{ hostname }}"
+      physical_path: 'D:\publish\{{ hostname }}'
+
+  - name: add HTTPS bindings
+    win_iis_webbinding:
+      name: "{{ hostname }}"
+      host_header: "{{ hostname }}"
+      protocol: https
+      port: 443
+      certificate_hash: "595adabac033d9532f702b1fa5f249f2c59eaa60"
